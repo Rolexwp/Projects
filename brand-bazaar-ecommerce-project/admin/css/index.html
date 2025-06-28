@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brand Bazaar - Home</title>
+    <link rel="icon" type="image/x-icon" href="/icons/favicon.ico" />
+    <link rel="stylesheet" href="css/admin.css"/> 
+    
+    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <!-- Inter Font - Used in slider text styling -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  
+  </head>
+  <body>
+    <nav class="navbar" id="navbar">
+      <div class="nav-container">
+        <a href="index.php" class="brand"
+          ><i class="fas fa-gem"></i> Brand Bazaar</a
+        >
+        <button class="nav-toggle" id="navToggle" aria-label="Open Menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="nav-links" id="navLinks">
+          <a href="index.php">Home</a>
+          <a href="deals.php">Deals</a>
+          <a href="trending.php">Trending</a>
+          <a href="contact.php">Contact</a>
+          <div class="dropdown">
+            <button class="dropbtn" aria-haspopup="true">
+              <i class="fas fa-th-large"></i> Categories
+              <i class="fas fa-angle-down"></i>
+            </button>
+            <div class="dropdown-content">
+              <a href="categories/laptops.php" class="category-link">Laptops</a>
+              <a href="categories/mobiles.php" class="category-link">Mobiles</a>
+              <a href="categories/gadgets.php" class="category-link">Gadgets</a>
+              <a href="categories/shoes.php" class="category-link">Shoes</a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-icons">
+          <form class="nav-search" id="navSearchForm" autocomplete="off">
+            <input
+              type="text"
+              id="navSearchInput"
+              placeholder="Search..."
+              aria-label="Search products, categories"
+            />
+            <button type="submit" class="nav-search-btn" title="Search">
+              <i class="fas fa-search"></i>
+            </button>
+          </form>
+
+          <div class="dropdown">
+            <button
+              class="nav-icon dropbtn"
+              id="profileIcon"
+              aria-haspopup="true"
+              title="Profile"
+            >
+              <i class="fas fa-user"></i>
+            </button>
+            <div class="dropdown-content">
+              <a href="profile.php">My Profile</a>
+              <a href="myorders.php">My Orders</a>
+              <a href="order-details.php">Order Details</a>
+              <a href="purchase.php">Purchase History</a>
+              <a href="tracking.php">Track Order</a>
+              <a href="checkout.php">Checkout</a>
+              <a href="logout.php">Logout</a>
+            </div>
+          </div>
+
+          <!-- Wishlist Icon -->
+          <a
+            href="wishlist.php"
+            class="nav-icon"
+            id="wishlistIcon"
+            title="Wishlist"
+          >
+            <i class="fas fa-heart"></i>
+            <span class="wishlist-count" id="wishlistCounter">0</span>
+          </a>
+
+          <a href="cart.php" class="nav-icon cart" id="cartIcon" title="Cart">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count" id="cartCounter">0</span>
+          </a>
+
+          <a
+            href="logout.php"
+            class="mbnav-item"
+            id="mbnavLogout"
+            aria-label="Logout"
+            style="display: none"
+          >
+            <i class="fas fa-sign-out-alt"></i><span></span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+     <?php
+// Database connection
+$conn = new mysqli("localhost", "username", "password", "database_name");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Fetch sliders
+$sliders = $conn->query("SELECT * FROM sliders ORDER BY order_by ASC");
+?>
+
+<!-- Slider Section -->
+<section class="slider-container">
+    <div class="slides" id="slides-container">
+        <?php while($slider = $sliders->fetch_assoc()): ?>
+        <div class="slide">
+            <?php if(!empty($slider['badge_text'])): ?>
+                <div class="slide-badge"><?php echo htmlspecialchars($slider['badge_text']); ?></div>
+            <?php endif; ?>
+            
+            <img src="<?php echo htmlspecialchars($slider['image_path']); ?>" alt="<?php echo htmlspecialchars($slider['title']); ?>" />
+            
+            <div class="slide-overlay">
+                <div class="slide-content">
+                    <h3><?php echo htmlspecialchars($slider['title']); ?></h3>
+                    <?php if(!empty($slider['description'])): ?>
+                        <p><?php echo htmlspecialchars($slider['description']); ?></p>
+                    <?php endif; ?>
+                    
+                    <?php if($slider['show_countdown'] && !empty($slider['countdown_date'])): ?>
+                        <div class="deal-countdown" data-countdown="<?php echo date('Y-m-d H:i:s', strtotime($slider['countdown_date'])); ?>">
+                            Limited Time: <span class="countdown-timer"></span>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <?php if(!empty($slider['link'])): ?>
+                        <a href="<?php echo htmlspecialchars($slider['link']); ?>" class="btn btn-slider">Shop Now</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <?php endwhile; ?>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <button class="slider-nav-btn prev" id="prev-btn">
+        <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="slider-nav-btn next" id="next-btn">
+        <i class="fas fa-chevron-right"></i>
+    </button>
+</section>
+
+<?php $conn->close(); ?>
+
+      <!-- Category Menu -->
+      <section class="category-menu" id="categoryMenu">
+        <a href="#category-laptops" class="cat-item" data-category="laptops"
+          ><i class="fas fa-laptop"></i> Laptops</a
+        >
+        <a href="mobiles.php" class="cat-item" data-category="mobiles"
+          ><i class="fas fa-mobile-alt"></i> Mobiles</a
+        >
+        <a href="gadgets.php" class="cat-item" data-category="gadgets"
+          ><i class="fas fa-tablet-alt"></i> Gadgets</a
+        >
+        <a href="#category-fashion" class="cat-item" data-category="fashion"
+          ><i class="fas fa-tshirt"></i> Fashion</a
+        >
+        <a href="#category-audio" class="cat-item" data-category="audio"
+          ><i class="fas fa-headphones"></i> Audio</a
+        >
+        <a href="shoes.php" class="cat-item" data-category="shoes"
+          ><i class="fas fa-shoe-prints"></i> Shoes</a
+        >
+      </section>
+
+    <!-- Replace the existing Featured Products Section with this: -->
+<section class="section section-gray" id="featured-products">
+  <div class="section-header">
+    <h2><i class="fas fa-star"></i> Featured Products</h2>
+    <a href="#" class="see-all">See All</a>
+  </div>
+  <div class="product-news-grid large-grid" id="featuredProductsGrid">
+    <!-- Product 1 -->
+    <div class="product-card">
+      <div class="product-badge">Featured</div>
+      <div class="product-img-container">
+        <img src="images/MacBook Pro 14 M3.jpg" alt="MacBook Pro" class="product-img">
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">MacBook Pro 14" M3</h3>
+        <p class="product-desc">Apple M3 chip with 8-core CPU, 10-core GPU, 8GB RAM, 512GB SSD</p>
+        <div class="product-price">
+          <span class="current-price">$1,299.00</span>
+          <span class="original-price">$1,499.00</span>
+          <span class="discount">13% off</span>
+        </div>
+        <div class="product-rating">
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star-half-alt"></i>
+          <span>(128)</span>
+        </div>
+      </div>
+      <div class="product-actions">
+        <button class="btn btn-secondary add-to-cart" onclick="addToCart({
+          name: 'MacBook Pro 14&quot; M3',
+          price: 1299.00,
+          image: 'images/products/laptop1.jpg'
+        })">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+        <button class="btn btn-primary buy-now" onclick="buyNow({
+          name: 'MacBook Pro 14&quot; M3',
+          price: 1299.00,
+          image: 'images/products/laptop1.jpg'
+        })">
+          Buy Now
+        </button>
+      </div>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="product-card">
+      <div class="product-badge">Bestseller</div>
+      <div class="product-img-container">
+        <img src="images/iPhone 15 Pro.jpg" alt="iPhone 15" class="product-img">
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">iPhone 15 Pro</h3>
+        <p class="product-desc">6.1-inch Super Retina XDR display, A17 Pro chip, 128GB storage</p>
+        <div class="product-price">
+          <span class="current-price">$999.00</span>
+          <span class="original-price">$1,099.00</span>
+          <span class="discount">9% off</span>
+        </div>
+        <div class="product-rating">
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="far fa-star"></i>
+          <span>(256)</span>
+        </div>
+      </div>
+      <div class="product-actions">
+        <button class="btn btn-secondary add-to-cart" onclick="addToCart({
+          name: 'iPhone 15 Pro',
+          price: 999.00,
+          image: 'images/products/phone1.jpg'
+        })">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+        <button class="btn btn-primary buy-now" onclick="buyNow({
+          name: 'iPhone 15 Pro',
+          price: 999.00,
+          image: 'images/products/phone1.jpg'
+        })">
+          Buy Now
+        </button>
+      </div>
+    </div>
+
+    <!-- Product 3 -->
+    <div class="product-card">
+      <div class="product-img-container">
+        <img src="images/Sony WH-1000XM5.jpg" alt="Sony Headphones" class="product-img">
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">Sony WH-1000XM5</h3>
+        <p class="product-desc">Industry-leading noise cancellation wireless headphones</p>
+        <div class="product-price">
+          <span class="current-price">$349.99</span>
+          <span class="original-price">$399.99</span>
+          <span class="discount">12% off</span>
+        </div>
+        <div class="product-rating">
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <span>(512)</span>
+        </div>
+      </div>
+      <div class="product-actions">
+        <button class="btn btn-secondary add-to-cart" onclick="addToCart({
+          name: 'Sony WH-1000XM5',
+          price: 349.99,
+          image: 'images/products/headphones1.jpg'
+        })">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+        <button class="btn btn-primary buy-now" onclick="buyNow({
+          name: 'Sony WH-1000XM5',
+          price: 349.99,
+          image: 'images/products/headphones1.jpg'
+        })">
+          Buy Now
+        </button>
+      </div>
+    </div>
+
+    <!-- Product 4 -->
+    <div class="product-card">
+      <div class="product-badge">Limited</div>
+      <div class="product-img-container">
+        <img src="images/Apple Watch Series 9.jpg" alt="Apple Watch" class="product-img">
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">Apple Watch Series 9</h3>
+        <p class="product-desc">GPS + Cellular, 45mm Midnight Aluminum Case</p>
+        <div class="product-price">
+          <span class="current-price">$429.00</span>
+          <span class="original-price">$499.00</span>
+          <span class="discount">14% off</span>
+        </div>
+        <div class="product-rating">
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star-half-alt"></i>
+          <span>(324)</span>
+        </div>
+      </div>
+      <div class="product-actions">
+        <button class="btn btn-secondary add-to-cart" onclick="addToCart({
+          name: 'Apple Watch Series 9',
+          price: 429.00,
+          image: 'images/products/watch1.jpg'
+        })">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+        <button class="btn btn-primary buy-now" onclick="buyNow({
+          name: 'Apple Watch Series 9',
+          price: 429.00,
+          image: 'images/products/watch1.jpg'
+        })">
+          Buy Now
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Replace the existing Best Deals Section with this: -->
+<section class="section section-gray" id="best-deals">
+  <div class="section-header">
+    <h2><i class="fas fa-fire"></i> Best Deals</h2>
+    <a href="#" class="see-all">See All</a>
+  </div>
+  <div class="product-news-grid large-grid" id="bestDealsGrid">
+    <!-- Product 1 -->
+    <div class="product-card">
+      <div class="product-badge">Hot Deal</div>
+      <div class="product-img-container">
+        <img src="images/Samsung 65 QLED TV.jpg" alt="Samsung TV" class="product-img">
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">Samsung 65" QLED TV</h3>
+        <p class="product-desc">4K UHD Smart QLED TV with HDR (QN65Q60BAFXZA)</p>
+        <div class="product-price">
+          <span class="current-price">$697.99</span>
+          <span class="original-price">$999.99</span>
+          <span class="discount">30% off</span>
+        </div>
+        <div class="product-rating">
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="far fa-star"></i>
+          <span>(187)</span>
+        </div>
+      </div>
+      <div class="product-actions">
+        <button class="btn btn-secondary add-to-cart" onclick="addToCart({
+          name: 'Samsung 65&quot; QLED TV',
+          price: 697.99,
+          image: 'images/products/tv1.jpg'
+        })">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+        <button class="btn btn-primary buy-now" onclick="buyNow({
+          name: 'Samsung 65&quot; QLED TV',
+          price: 697.99,
+          image: 'images/products/tv1.jpg'
+        })">
+          Buy Now
+        </button>
+      </div>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="product-card">
+      <div class="product-badge">Clearance</div>
+      <div class="product-img-container">
+        <img src="images/Nike Air Max 270.jpg" alt="Nike Shoes" class="product-img">
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">Nike Air Max 270</h3>
+        <p class="product-desc">Men's Running Shoes (Size 8-13 available)</p>
+        <div class="product-price">
+          <span class="current-price">$89.97</span>
+          <span class="original-price">$160.00</span>
+          <span class="discount">44% off</span>
+        </div>
+        <div class="product-rating">
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star-half-alt"></i>
+          <span>(432)</span>
+        </div>
+      </div>
+      <div class="product-actions">
+        <button class="btn btn-secondary add-to-cart" onclick="addToCart({
+          name: 'Nike Air Max 270',
+          price: 89.97,
+          image: 'images/products/shoes1.jpg'
+        })">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+        <button class="btn btn-primary buy-now" onclick="buyNow({
+          name: 'Nike Air Max 270',
+          price: 89.97,
+          image: 'images/products/shoes1.jpg'
+        })">
+          Buy Now
+        </button>
+      </div>
+    </div>
+
+    <!-- Product 3 -->
+    <div class="product-card">
+      <div class="product-badge">Deal</div>
+      <div class="product-img-container">
+        <img src="images/Canon EOS R100.jpg" alt="Canon Camera" class="product-img">
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">Canon EOS R100</h3>
+        <p class="product-desc">Mirrorless Camera with RF-S 18-45mm Lens</p>
+        <div class="product-price">
+          <span class="current-price">$479.00</span>
+          <span class="original-price">$599.00</span>
+          <span class="discount">20% off</span>
+        </div>
+        <div class="product-rating">
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="far fa-star"></i>
+          <span>(156)</span>
+        </div>
+      </div>
+      <div class="product-actions">
+        <button class="btn btn-secondary add-to-cart" onclick="addToCart({
+          name: 'Canon EOS R100',
+          price: 479.00,
+          image: 'images/products/camera1.jpg'
+        })">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+        <button class="btn btn-primary buy-now" onclick="buyNow({
+          name: 'Canon EOS R100',
+          price: 479.00,
+          image: 'images/products/camera1.jpg'
+        })">
+          Buy Now
+        </button>
+      </div>
+    </div>
+
+    <!-- Product 4 -->
+    <div class="product-card">
+      <div class="product-badge">Special</div>
+      <div class="product-img-container">
+        <img src="images/iPad Air (5th Gen).jpg" alt="iPad Air" class="product-img">
+      </div>
+      <div class="product-info">
+        <h3 class="product-title">iPad Air (5th Gen)</h3>
+        <p class="product-desc">10.9-inch, Wi-Fi, 64GB - Space Gray</p>
+        <div class="product-price">
+          <span class="current-price">$499.99</span>
+          <span class="original-price">$599.00</span>
+          <span class="discount">17% off</span>
+        </div>
+        <div class="product-rating">
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star-half-alt"></i>
+          <span>(289)</span>
+        </div>
+      </div>
+      <div class="product-actions">
+        <button class="btn btn-secondary add-to-cart" onclick="addToCart({
+          name: 'iPad Air (5th Gen)',
+          price: 499.99,
+          image: 'images/products/tablet1.jpg'
+        })">
+          <i class="fas fa-cart-plus"></i> Add to Cart
+        </button>
+        <button class="btn btn-primary buy-now" onclick="buyNow({
+          name: 'iPad Air (5th Gen)',
+          price: 499.99,
+          image: 'images/products/tablet1.jpg'
+        })">
+          Buy Now
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Add this CSS in the head section -->
+<style>
+  /* Product Card Styles */
+  .product-news-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    padding: 0 10px;
+  }
+
+  .product-card {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .product-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: var(--primary);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 2;
+  }
+
+  .product-img-container {
+    height: 200px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    background: #f5f7fa;
+    padding: 20px;
+  }
+
+  .product-card:hover .product-img {
+    transform: scale(1.05);
+  }
+
+  .product-info {
+    padding: 15px;
+  }
+
+  .product-title {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .product-desc {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2; /* Standard property for compatibility */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  height: 40px;
+}
+
+  .product-price {
+    margin-bottom: 10px;
+  }
+
+  .current-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .original-price {
+    font-size: 0.9rem;
+    text-decoration: line-through;
+    color: #999;
+    margin-left: 8px;
+  }
+
+  .discount {
+    font-size: 0.8rem;
+    color: var(--danger);
+    font-weight: 600;
+    margin-left: 8px;
+  }
+
+  .product-rating {
+    color: #ffb300;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+  }
+
+  .product-rating span {
+    color: #666;
+    margin-left: 5px;
+  }
+
+  .product-actions {
+    display: flex;
+    gap: 10px;
+    padding: 0 15px 15px;
+  }
+
+  .product-actions .btn {
+    flex: 1;
+    padding: 8px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ddd;
+  }
+
+  .btn-secondary:hover {
+    background-color: #e0e0e0;
+  }
+
+  .btn-primary {
+    background-color: var(--primary);
+    color: white;
+    border: 1px solid var(--primary-dark);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--primary-dark);
+  }
+
+  @media (max-width: 768px) {
+    .product-news-grid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+
+    .product-img-container {
+      height: 160px;
+    }
+
+    .product-actions {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<!-- Add this script at the bottom of your body, before the closing </body>
+<script>
+  // Cart functions
+ function buyNow(product) {
+  // Create a temporary cart with just this product
+  const tempCart = [{
+    ...product,
+    qty: 1
+  }];
+  
+  // Save to localStorage
+  localStorage.setItem('tempCart', JSON.stringify(tempCart));
+  
+  // Redirect to checkout
+  window.location.href = 'checkout.php';
+}
+
+  function updateCartCounter() {
+    let cart = [];
+    try {
+      cart = JSON.parse(localStorage.getItem("cart")) || [];
+    } catch {}
+    let total = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+    const cartCounter = document.getElementById("cartCounter");
+    if (cartCounter) cartCounter.textContent = total;
+    const cartMobile = document.getElementById("cartCounterMobile");
+    if (cartMobile) cartMobile.textContent = total;
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById("toast");
+    if (!t) return;
+    t.textContent = msg;
+    t.style.display = "block";
+    setTimeout(() => (t.style.display = "none"), 1800);
+  }
+
+  // Initialize cart counter on page load
+  document.addEventListener("DOMContentLoaded", updateCartCounter);
+</script>
+
+    <!-- Newsletter & Social -->
+    <section id="newsletterSocial">
+      <div class="newsletter">
+        <h3>Subscribe for Exclusive Offers</h3>
+        <form>
+          <input type="email" placeholder="Enter your email" required />
+          <button type="submit" class="btn">Subscribe</button>
+        </form>
+      </div>
+      <div class="social-links">
+        <a
+          href="https://facebook.com"
+          class="social facebook"
+          target="_blank"
+          rel="noopener"
+          ><i class="fab fa-facebook-f"></i
+        ></a>
+        <a
+          href="https://twitter.com"
+          class="social twitter"
+          target="_blank"
+          rel="noopener"
+          ><i class="fab fa-twitter"></i
+        ></a>
+        <a
+          href="https://instagram.com"
+          class="social instagram"
+          target="_blank"
+          rel="noopener"
+          ><i class="fab fa-instagram"></i
+        ></a>
+        <a
+          href="https://youtube.com"
+          class="social youtube"
+          target="_blank"
+          rel="noopener"
+          ><i class="fab fa-youtube"></i
+        ></a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <!-- Add this just before the existing footer -->
+    <section class="footer-links-section">
+      <div class="footer-links-container">
+        <div class="footer-links-column">
+          <h3>Get to Know Us</h3>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press Releases</a></li>
+            <li><a href="#">Brand Bazaar Science</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-column">
+          <h3>Make Money with Us</h3>
+          <ul>
+            <li><a href="#">Sell products on Brand Bazaar</a></li>
+            <li><a href="#">Sell on Brand Bazaar Business</a></li>
+            <li><a href="#">Become an Affiliate</a></li>
+            <li><a href="#">Advertise Your Products</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-column">
+          <h3>Payment Products</h3>
+          <ul>
+            <li><a href="#">Brand Bazaar Business Card</a></li>
+            <li><a href="#">Shop with Points</a></li>
+            <li><a href="#">Reload Your Balance</a></li>
+            <li><a href="#">Currency Converter</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links-column">
+          <h3>Let Us Help You</h3>
+          <ul>
+            <li><a href="#">Your Account</a></li>
+            <li><a href="#">Your Orders</a></li>
+            <li><a href="#">Shipping Rates & Policies</a></li>
+            <li><a href="#">Returns & Replacements</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add this CSS in the head section -->
+    <style>
+      /* Footer Links Section */
+      .footer-links-section {
+        background-color: #0a45a6; /* Using your primary color */
+        color: white;
+        padding: 40px 0;
+        margin-top: 40px;
+      }
+
+      .footer-links-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 0 20px;
+      }
+
+      .footer-links-column {
+        flex: 1;
+        min-width: 200px;
+        margin-bottom: 20px;
+        padding: 0 15px;
+      }
+
+      .footer-links-column h3 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+        font-weight: 700;
+        color: #fff;
+      }
+
+      .footer-links-column ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .footer-links-column li {
+        margin-bottom: 10px;
+      }
+
+      .footer-links-column a {
+        color: #e0e0e0;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+      }
+
+      .footer-links-column a:hover {
+        color: white;
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .footer-links-column {
+          min-width: 150px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .footer-links-column {
+          min-width: 100%;
+        }
+      }
+    </style>
+    <!-- Add this before the existing footer -->
+    <section class="policy-section">
+      <div class="policy-container">
+        <!-- Box 1: Customer Service -->
+        <div class="policy-box">
+          <div class="policy-icon">
+            <i class="fas fa-headset"></i>
+          </div>
+          <h3>Customer Service</h3>
+          <ul>
+            <li>
+              <a href="#"><i class="fas fa-chevron-right"></i> Help Center</a>
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-chevron-right"></i> Track Order</a>
+            </li>
+            <li>
+              <a href="#"
+                ><i class="fas fa-chevron-right"></i> Returns & Refunds</a
+              >
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-chevron-right"></i> 24/7 Support</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Box 2: Payment Security -->
+        <div class="policy-box">
+          <div class="policy-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3>Payment Security</h3>
+          <ul>
+            <li>
+              <a href="#"
+                ><i class="fas fa-chevron-right"></i> Payment Methods</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><i class="fas fa-chevron-right"></i> SSL Encryption</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><i class="fas fa-chevron-right"></i> Fraud Protection</a
+              >
+            </li>
+            <li>
+              <a href="#"
+                ><i class="fas fa-chevron-right"></i> Privacy Policy</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <!-- Box 3: Shipping Info -->
+        <div class="policy-box">
+          <div class="policy-icon">
+            <i class="fas fa-truck"></i>
+          </div>
+          <h3>Shipping Info</h3>
+          <ul>
+            <li>
+              <a href="#"
+                ><i class="fas fa-chevron-right"></i> Delivery Options</a
+              >
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-chevron-right"></i> Free Shipping</a>
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-chevron-right"></i> International</a>
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-chevron-right"></i> Track Package</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Box 4: About Brand Bazaar -->
+        <div class="policy-box">
+          <div class="policy-icon">
+            <i class="fas fa-store"></i>
+          </div>
+          <h3>About Brand Bazaar</h3>
+          <ul>
+            <li>
+              <a href="#"><i class="fas fa-chevron-right"></i> Our Story</a>
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-chevron-right"></i> Careers</a>
+            </li>
+            <li>
+              <a href="#"><i class="fas fa-chevron-right"></i> Investors</a>
+            </li>
+            <li>
+              <a href="#"
+                ><i class="fas fa-chevron-right"></i> Sustainability</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Add this CSS in the head section -->
+    <style>
+      /* Policy Section Styles */
+      .policy-section {
+        background: linear-gradient(135deg, #f6f8fb 0%, #e6ecf5 100%);
+        padding: 50px 0;
+        border-top: 1px solid #c9e0fc;
+        border-bottom: 1px solid #c9e0fc;
+      }
+
+      .policy-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 25px;
+        padding: 0 20px;
+      }
+
+      .policy-box {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(10, 69, 166, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #e3e6ec;
+      }
+
+      .policy-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(10, 69, 166, 0.15);
+      }
+
+      .policy-icon {
+        width: 50px;
+        height: 50px;
+        background: rgba(10, 69, 166, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 15px;
+        color: #0a45a6;
+        font-size: 1.5rem;
+      }
+
+      .policy-box h3 {
+        color: #0a45a6;
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        font-weight: 700;
+      }
+
+      .policy-box ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .policy-box li {
+        margin-bottom: 10px;
+        position: relative;
+        padding-left: 20px;
+      }
+
+      .policy-box li:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 8px;
+        background: #0a45a6;
+        border-radius: 50%;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .policy-box li:hover:before {
+        opacity: 1;
+      }
+
+      .policy-box a {
+        color: #444;
+        text-decoration: none;
+        font-size: 0.95rem;
+        transition: color 0.3s ease, padding-left 0.3s ease;
+        display: block;
+      }
+
+      .policy-box a:hover {
+        color: #0a45a6;
+        padding-left: 5px;
+      }
+
+      .policy-box a i {
+        margin-right: 8px;
+        color: #0a45a6;
+        font-size: 0.8rem;
+        transition: margin-right 0.3s ease;
+      }
+
+      .policy-box a:hover i {
+        margin-right: 10px;
+      }
+
+      @media (max-width: 768px) {
+        .policy-container {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .policy-container {
+          grid-template-columns: 1fr;
+        }
+
+        .policy-box {
+          padding: 20px;
+        }
+      }
+    </style>
+    <footer>
+      <p>
+        © 2025 Brand Bazaar. All rights reserved. |
+        <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> |
+        <a href="#">Shipping Policy</a>
+      </p>
+    </footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+      <a href="index.php" class="mbnav-item active" aria-label="Home"
+        ><i class="fas fa-home"></i><span>Home</span></a
+      >
+      <a href="deals.php" class="mbnav-item" aria-label="Deals"
+        ><i class="fas fa-tag"></i><span>Deals</span></a
+      >
+      <a href="wishlist.php" class="mbnav-item" aria-label="Wishlist"
+        ><i class="fas fa-heart"></i><span>Wishlist</span></a
+      >
+      <a href="cart.php" class="mbnav-item" id="mbnavCart" aria-label="Cart"
+        ><i class="fas fa-shopping-cart"></i><span>Cart</span
+        ><span class="cart-count" id="cartCounterMobile">0</span></a
+      >
+      <div class="dropdown mbnav-item" id="mbnavProfileContainer">
+        <button class="dropbtn" id="mbnavProfile" aria-label="Profile">
+          <i class="fas fa-user"></i><span>Profile</span>
+        </button>
+        <div class="dropdown-content">
+          <a href="profile.php">My Profile</a>
+          <a href="myorders.php">My Orders</a>
+          <a href="order-details.php">Order Details</a>
+          <a href="purchase.php">Purchase History</a>
+          <a href="tracking.php">Track Order</a>
+          <a href="checkout.php">Checkout</a>
+          
+
+        </div>
+      </div>
+    </nav>
+
+    <div id="toast"></div>
+
+    <script src="js/main.js"></script>
+    <script src="js/cart.js"></script>
+    <script>
+      // Slider functionality
+      document.addEventListener("DOMContentLoaded", () => {
+        const slidesContainer = document.getElementById("slides-container");
+        const slides = document.querySelectorAll(".slide");
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
+        let currentIndex = 0;
+        let slideInterval;
+        const slideDuration = 5000;
+
+        const updateSlider = () => {
+          const offset = -currentIndex * 100;
+          slidesContainer.style.transform = `translateX(${offset}%)`;
+        };
+
+        const nextSlide = () => {
+          currentIndex = (currentIndex + 1) % slides.length;
+          updateSlider();
+        };
+
+        const prevSlide = () => {
+          currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+          updateSlider();
+        };
+
+        const startAutoSlide = () => {
+          clearInterval(slideInterval);
+          slideInterval = setInterval(nextSlide, slideDuration);
+        };
+
+        const stopAutoSlide = () => {
+          clearInterval(slideInterval);
+        };
+
+        nextBtn.addEventListener("click", () => {
+          nextSlide();
+          startAutoSlide();
+        });
+
+        prevBtn.addEventListener("click", () => {
+          prevSlide();
+          startAutoSlide();
+        });
+
+        slidesContainer.addEventListener("mouseenter", stopAutoSlide);
+        slidesContainer.addEventListener("mouseleave", startAutoSlide);
+
+        updateSlider();
+        startAutoSlide();
+
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowRight") {
+            nextSlide();
+            startAutoSlide();
+          } else if (e.key === "ArrowLeft") {
+            prevSlide();
+            startAutoSlide();
+          }
+        });
+      });
+
+      // Check login status for logout button
+      function checkLoginStatus() {
+        let user = localStorage.getItem("loggedInUser");
+        const logoutBtn = document.getElementById("mbnavLogout");
+        if (logoutBtn) {
+          logoutBtn.style.display = user ? "" : "none";
+        }
+      }
+      checkLoginStatus();
+
+      // Dropdown functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        const dropdownButtons = document.querySelectorAll(".dropdown .dropbtn");
+
+        dropdownButtons.forEach((button) => {
+          button.addEventListener("click", function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const dropdownContent = this.nextElementSibling;
+
+            document
+              .querySelectorAll(".dropdown-content.show")
+              .forEach((openDropdown) => {
+                if (openDropdown !== dropdownContent) {
+                  openDropdown.classList.remove("show");
+                }
+              });
+
+            dropdownContent.classList.toggle("show");
+          });
+        });
+
+        document.addEventListener("click", function (event) {
+          if (!event.target.closest(".dropdown")) {
+            document
+              .querySelectorAll(".dropdown-content.show")
+              .forEach((openDropdown) => {
+                openDropdown.classList.remove("show");
+              });
+          }
+        });
+      });
+
+       // Cart functions
+      function addToCart(product) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        
+        const existingItem = cart.find(item => item.name === product.name);
+        
+        if (existingItem) {
+          existingItem.qty = (existingItem.qty || 1) + 1;
+        } else {
+          product.qty = 1;
+          cart.push(product);
+        }
+        
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartCounter();
+        showToast(`${product.name} added to cart!`);
+      }
+
+      function buyNow(product) {
+        const tempCart = [{
+          ...product,
+          qty: 1
+        }];
+        localStorage.setItem("tempCart", JSON.stringify(tempCart));
+        window.location.href = "checkout.php";
+      }
+
+      function updateCartCounter() {
+        let cart = [];
+        try {
+          cart = JSON.parse(localStorage.getItem("cart")) || [];
+        } catch {}
+        let total = cart.reduce((sum, item) => sum + (item.qty || 1), 0);
+        const cartCounter = document.getElementById("cartCounter");
+        if (cartCounter) cartCounter.textContent = total;
+        const cartMobile = document.getElementById("cartCounterMobile");
+        if (cartMobile) cartMobile.textContent = total;
+      }
+
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        if (!t) return;
+        t.textContent = msg;
+        t.style.display = "block";
+        setTimeout(() => (t.style.display = "none"), 1800);
+      }
+
+      // Initialize cart counter on page load
+      document.addEventListener("DOMContentLoaded", updateCartCounter);
+
+      // ... rest of your existing script code ...
+    </script>
+  </body>
+</html>
