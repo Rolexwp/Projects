@@ -1,5 +1,15 @@
 <?php
 require_once 'config.php';
+<<<<<<< HEAD
+=======
+session_start();
+
+// Check if admin is logged in
+if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
+    header("Location: login.php");
+    exit;
+}
+>>>>>>> 22151942540414ef8b88569e0a0b797ee6aad75a
 
 // Handle order status update
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id']) && isset($_POST['status'])) {
@@ -8,6 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id']) && isset(
 
     $update_query = "UPDATE orders SET status = '$status' WHERE id = '$order_id'";
     if (mysqli_query($conn, $update_query)) {
+<<<<<<< HEAD
+=======
+        // Status updated successfully
+>>>>>>> 22151942540414ef8b88569e0a0b797ee6aad75a
         header("Location: orders.php?status_updated=true");
         exit;
     } else {

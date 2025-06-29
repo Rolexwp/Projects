@@ -2,7 +2,15 @@
 require_once 'config.php';
 session_start();
 
+<<<<<<< HEAD
 
+=======
+// Check if admin is logged in
+if (!isset($_SESSION['admin_logged_in']) || !$_SESSION['admin_logged_in']) {
+    header("Location: login.php");
+    exit;
+}
+>>>>>>> 22151942540414ef8b88569e0a0b797ee6aad75a
 
 $order = null;
 $order_items = [];
